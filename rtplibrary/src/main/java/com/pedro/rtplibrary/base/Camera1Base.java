@@ -24,6 +24,7 @@ import com.pedro.encoder.video.FormatVideoEncoder;
 import com.pedro.encoder.video.GetVideoData;
 import com.pedro.encoder.video.VideoEncoder;
 import com.pedro.rtplibrary.util.FpsListener;
+import com.pedro.rtplibrary.util.FramesListener;
 import com.pedro.rtplibrary.util.RecordController;
 import com.pedro.rtplibrary.view.GlInterface;
 import com.pedro.rtplibrary.view.LightOpenGlView;
@@ -63,6 +64,7 @@ public abstract class Camera1Base
   private RecordController recordController;
   private int previewWidth, previewHeight;
   private FpsListener fpsListener = new FpsListener();
+  private FramesListener framesListener = new FramesListener();
 
   public Camera1Base(SurfaceView surfaceView) {
     context = surfaceView.getContext();
@@ -115,6 +117,13 @@ public abstract class Camera1Base
    */
   public void setFpsListener(FpsListener.Callback callback) {
     fpsListener.setCallback(callback);
+  }
+
+  /**
+   * @param callback get frames from camera
+   */
+  public void setFrameListener(FramesListener.Callback callback ) {
+    framesListener.setCallback(callback);
   }
 
   /**
@@ -681,7 +690,7 @@ public abstract class Camera1Base
 
   @Override
   public void inputYUVData(Frame frame) {
-    videoEncoder.inputYUVData(frame);
+    framesListener.getFrames(frame);
   }
 
   @Override

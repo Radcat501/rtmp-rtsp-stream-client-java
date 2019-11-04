@@ -165,6 +165,8 @@ public class Camera1ApiManager implements Camera.PreviewCallback, Camera.FaceDet
         camera.setPreviewCallbackWithBuffer(this);
       } else {
         camera.setPreviewTexture(surfaceTexture);
+        camera.addCallbackBuffer(yuvBuffer);
+        camera.setPreviewCallbackWithBuffer(this);
       }
       camera.startPreview();
       running = true;
