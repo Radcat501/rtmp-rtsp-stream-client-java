@@ -77,8 +77,9 @@ public class Camera1ApiManager implements Camera.PreviewCallback, Camera.FaceDet
     init();
   }
 
-  public Camera1ApiManager(SurfaceTexture surfaceTexture, Context context) {
+  public Camera1ApiManager(SurfaceTexture surfaceTexture, GetCameraData getCameraData, Context context) {
     this.surfaceTexture = surfaceTexture;
+    this.getCameraData = getCameraData;
     this.context = context;
     init();
   }
@@ -108,20 +109,20 @@ public class Camera1ApiManager implements Camera.PreviewCallback, Camera.FaceDet
 
   public void start(CameraHelper.Facing cameraFacing, int width, int height, int fps) {
     int facing = cameraFacing == CameraHelper.Facing.BACK ? Camera.CameraInfo.CAMERA_FACING_BACK
-        : Camera.CameraInfo.CAMERA_FACING_FRONT;
+            : Camera.CameraInfo.CAMERA_FACING_FRONT;
     this.width = width;
     this.height = height;
     this.fps = fps;
     this.cameraFacing = facing;
     cameraSelect =
-        facing == Camera.CameraInfo.CAMERA_FACING_BACK ? selectCameraBack() : selectCameraFront();
+            facing == Camera.CameraInfo.CAMERA_FACING_BACK ? selectCameraBack() : selectCameraFront();
     start();
   }
 
   public void start(int width, int height, int fps) {
     CameraHelper.Facing facing =
-        cameraFacing == Camera.CameraInfo.CAMERA_FACING_BACK ? CameraHelper.Facing.BACK
-            : CameraHelper.Facing.FRONT;
+            cameraFacing == Camera.CameraInfo.CAMERA_FACING_BACK ? CameraHelper.Facing.BACK
+                    : CameraHelper.Facing.FRONT;
     start(facing, width, height, fps);
   }
 
@@ -136,7 +137,7 @@ public class Camera1ApiManager implements Camera.PreviewCallback, Camera.FaceDet
       Camera.getCameraInfo(cameraSelect, info);
       isFrontCamera = info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT;
       isPortrait = context.getResources().getConfiguration().orientation
-          == Configuration.ORIENTATION_PORTRAIT;
+              == Configuration.ORIENTATION_PORTRAIT;
       Camera.Parameters parameters = camera.getParameters();
       parameters.setPreviewSize(width, height);
       parameters.setPreviewFormat(imageFormat);
@@ -188,7 +189,7 @@ public class Camera1ApiManager implements Camera.PreviewCallback, Camera.FaceDet
   public void setZoom(MotionEvent event) {
     try {
       if (camera != null && running && camera.getParameters() != null && camera.getParameters()
-          .isZoomSupported()) {
+              .isZoomSupported()) {
         android.hardware.Camera.Parameters params = camera.getParameters();
         int maxZoom = params.getMaxZoom();
         int zoom = params.getZoom();
@@ -354,7 +355,7 @@ public class Camera1ApiManager implements Camera.PreviewCallback, Camera.FaceDet
           }
           stop();
           cameraFacing = cameraFacing == Camera.CameraInfo.CAMERA_FACING_BACK
-              ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK;
+                  ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK;
           start();
           return;
         }

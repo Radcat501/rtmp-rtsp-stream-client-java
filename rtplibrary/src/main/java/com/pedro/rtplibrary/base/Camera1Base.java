@@ -48,7 +48,7 @@ import java.util.List;
  */
 
 public abstract class Camera1Base
-    implements GetAacData, GetCameraData, GetVideoData, GetMicrophoneData {
+        implements GetAacData, GetCameraData, GetVideoData, GetMicrophoneData {
 
   private static final String TAG = "Camera1Base";
 
@@ -83,7 +83,8 @@ public abstract class Camera1Base
     context = openGlView.getContext();
     this.glInterface = openGlView;
     this.glInterface.init();
-    cameraManager = new Camera1ApiManager(glInterface.getSurfaceTexture(), context);
+
+    cameraManager = new Camera1ApiManager(glInterface.getSurfaceTexture(), this, context);
     init();
   }
 
@@ -92,7 +93,7 @@ public abstract class Camera1Base
     context = lightOpenGlView.getContext();
     this.glInterface = lightOpenGlView;
     this.glInterface.init();
-    cameraManager = new Camera1ApiManager(glInterface.getSurfaceTexture(), context);
+    cameraManager = new Camera1ApiManager(glInterface.getSurfaceTexture(), this, context);
     init();
   }
 
@@ -101,7 +102,7 @@ public abstract class Camera1Base
     this.context = context;
     glInterface = new OffScreenGlThread(context);
     glInterface.init();
-    cameraManager = new Camera1ApiManager(glInterface.getSurfaceTexture(), context);
+    cameraManager = new Camera1ApiManager(glInterface.getSurfaceTexture(), this,  context);
     init();
   }
 
@@ -189,22 +190,22 @@ public abstract class Camera1Base
    * doesn't support any configuration seated or your device hasn't a H264 encoder).
    */
   public boolean prepareVideo(int width, int height, int fps, int bitrate, boolean hardwareRotation,
-      int iFrameInterval, int rotation) {
+                              int iFrameInterval, int rotation) {
     if (onPreview && width != previewWidth || height != previewHeight) {
       stopPreview();
       onPreview = true;
     }
     FormatVideoEncoder formatVideoEncoder =
-        glInterface == null ? FormatVideoEncoder.YUV420Dynamical : FormatVideoEncoder.SURFACE;
+            glInterface == null ? FormatVideoEncoder.YUV420Dynamical : FormatVideoEncoder.SURFACE;
     return videoEncoder.prepareVideoEncoder(width, height, fps, bitrate, rotation, hardwareRotation,
-        iFrameInterval, formatVideoEncoder);
+            iFrameInterval, formatVideoEncoder);
   }
 
   /**
    * backward compatibility reason
    */
   public boolean prepareVideo(int width, int height, int fps, int bitrate, boolean hardwareRotation,
-      int rotation) {
+                              int rotation) {
     return prepareVideo(width, height, fps, bitrate, hardwareRotation, 2, rotation);
   }
 
@@ -223,11 +224,11 @@ public abstract class Camera1Base
    * doesn't support any configuration seated or your device hasn't a AAC encoder).
    */
   public boolean prepareAudio(int bitrate, int sampleRate, boolean isStereo, boolean echoCanceler,
-      boolean noiseSuppressor) {
+                              boolean noiseSuppressor) {
     microphoneManager.createMicrophone(sampleRate, isStereo, echoCanceler, noiseSuppressor);
     prepareAudioRtp(isStereo, sampleRate);
     return audioEncoder.prepareAudioEncoder(bitrate, sampleRate, isStereo,
-        microphoneManager.getMaxInputSize());
+            microphoneManager.getMaxInputSize());
   }
 
   /**
@@ -269,7 +270,7 @@ public abstract class Camera1Base
    */
   @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
   public void startRecord(final String path, RecordController.Listener listener)
-      throws IOException {
+          throws IOException {
     recordController.startRecord(path, listener);
     if (!streaming) {
       startEncoders();
@@ -408,7 +409,7 @@ public abstract class Camera1Base
     microphoneManager.start();
     cameraManager.setRotation(videoEncoder.getRotation());
     if (!cameraManager.isRunning() && videoEncoder.getWidth() != previewWidth
-        || videoEncoder.getHeight() != previewHeight) {
+            || videoEncoder.getHeight() != previewHeight) {
       cameraManager.start(videoEncoder.getWidth(), videoEncoder.getHeight(), videoEncoder.getFps());
     }
     onPreview = true;
@@ -438,7 +439,7 @@ public abstract class Camera1Base
       }
       glInterface.setRotation(0);
       if (!cameraManager.isRunning() && videoEncoder.getWidth() != previewWidth
-          || videoEncoder.getHeight() != previewHeight) {
+              || videoEncoder.getHeight() != previewHeight) {
         glInterface.start();
       }
       if (videoEncoder.getInputSurface() != null) {
