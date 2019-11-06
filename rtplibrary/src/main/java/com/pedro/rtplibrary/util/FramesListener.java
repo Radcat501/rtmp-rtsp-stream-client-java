@@ -15,7 +15,7 @@ public class FramesListener {
     }
 
     public void getFrames(Frame frame) {
-        callback.onGetFrame(frame);
+        if (callback != null) callback.onGetFrame(frame);
     }
 
 }
