@@ -9,6 +9,7 @@ import android.os.HandlerThread;
 import android.util.Log;
 import com.pedro.encoder.Frame;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * Created by pedro on 19/01/17.
@@ -154,6 +155,25 @@ public class MicrophoneManager {
         AudioRecord.getMinBufferSize(sampleRate, channel, AudioFormat.ENCODING_PCM_16BIT);
     return pcmBufSize * 5;
   }
+
+  public short[] getAmplitude() {
+    if (audioRecord != null) {
+
+      short[] buffer = new short[8192];
+      int readBytes = 0;
+
+      while (readBytes < 8192) {
+        readBytes += audioRecord.read(buffer, readBytes, 8192-readBytes);
+      }
+
+      short[] copyToReturn = Arrays.copyOf(buffer, 512);
+      Arrays.sort(buffer);
+
+      return copyToReturn;
+    }
+    return null;
+  }
+
 
   public int getMaxInputSize() {
     return BUFFER_SIZE;

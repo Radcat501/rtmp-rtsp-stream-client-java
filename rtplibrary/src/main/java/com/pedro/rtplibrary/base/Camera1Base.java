@@ -32,6 +32,7 @@ import com.pedro.rtplibrary.view.OffScreenGlThread;
 import com.pedro.rtplibrary.view.OpenGlView;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -162,6 +163,10 @@ public abstract class Camera1Base
 
   public boolean isLanternEnabled() {
     return cameraManager.isLanternEnabled();
+  }
+
+  public short[] getAudioRecordAmplitude() {
+    return microphoneManager.getAmplitude();
   }
 
   /**
