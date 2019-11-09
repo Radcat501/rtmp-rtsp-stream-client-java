@@ -403,7 +403,7 @@ public class VideoEncoder extends BaseEncoder implements GetCameraData {
   protected Frame getInputFrame() throws InterruptedException {
     Frame frame = queue.take();
 
-    frame.setOrientation(180);
+    int crutchedOrientation = 90;
 
     if (fpsLimiter.limitFPS()) return getInputFrame();
     byte[] buffer = frame.getBuffer();
@@ -411,8 +411,8 @@ public class VideoEncoder extends BaseEncoder implements GetCameraData {
     if (!hardwareRotation) {
       int orientation = frame.isFlip() ? frame.getOrientation() + 180 : frame.getOrientation();
       if (orientation >= 360) orientation -= 360;
-      buffer = isYV12 ? YUVUtil.rotateYV12(buffer, width, height, orientation)
-          : YUVUtil.rotateNV21(buffer, width, height, orientation);
+      buffer = isYV12 ? YUVUtil.rotateYV12(buffer, width, height, crutchedOrientation)
+          : YUVUtil.rotateNV21(buffer, width, height, crutchedOrientation);
     }
     buffer = isYV12 ? YUVUtil.YV12toYUV420byColor(buffer, width, height, formatVideoEncoder)
         : YUVUtil.NV21toYUV420byColor(buffer, width, height, formatVideoEncoder);
