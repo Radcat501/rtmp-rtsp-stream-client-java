@@ -42,10 +42,6 @@ public abstract class BaseEncoder implements EncoderCallback {
   protected abstract MediaCodecInfo chooseEncoder(String mime);
 
   protected void getDataFromEncoder(Frame frame) throws IllegalStateException {
-
-    // Crutch for iOS
-    frame.setOrientation(180);
-
     if (isBufferMode) {
       int inBufferIndex = codec.dequeueInputBuffer(0);
       if (inBufferIndex >= 0) {

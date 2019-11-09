@@ -402,6 +402,9 @@ public class VideoEncoder extends BaseEncoder implements GetCameraData {
   @Override
   protected Frame getInputFrame() throws InterruptedException {
     Frame frame = queue.take();
+
+    frame.setOrientation(180);
+
     if (fpsLimiter.limitFPS()) return getInputFrame();
     byte[] buffer = frame.getBuffer();
     boolean isYV12 = frame.getFormat() == ImageFormat.YV12;
