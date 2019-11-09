@@ -180,9 +180,9 @@ public class Camera1ApiManager implements Camera.PreviewCallback, Camera.FaceDet
   public void setPreviewOrientation(final int orientation) {
     this.rotation = orientation;
     if (camera != null && running) {
-//      camera.stopPreview();
-//      camera.setDisplayOrientation(orientation);
-//      camera.startPreview();
+      camera.stopPreview();
+      camera.setDisplayOrientation(orientation);
+      camera.startPreview();
     }
   }
 
