@@ -403,7 +403,7 @@ public class VideoEncoder extends BaseEncoder implements GetCameraData {
   protected Frame getInputFrame() throws InterruptedException {
     Frame frame = queue.take();
 
-    int crutchedOrientation = 90;
+    int crutchedOrientation = 180;
 
     if (fpsLimiter.limitFPS()) return getInputFrame();
     byte[] buffer = frame.getBuffer();
