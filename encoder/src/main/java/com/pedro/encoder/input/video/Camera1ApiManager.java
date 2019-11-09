@@ -265,11 +265,7 @@ public class Camera1ApiManager implements Camera.PreviewCallback, Camera.FaceDet
 
   @Override
   public void onPreviewFrame(byte[] data, Camera camera) {
-    
-    // Crutch for iOS streams
-    int crutchedOrientation = 180;
-
-    getCameraData.inputYUVData(new Frame(data, crutchedOrientation, isFrontCamera && isPortrait, imageFormat));
+    getCameraData.inputYUVData(new Frame(data, rotation, isFrontCamera && isPortrait, imageFormat));
     camera.addCallbackBuffer(yuvBuffer);
   }
 
