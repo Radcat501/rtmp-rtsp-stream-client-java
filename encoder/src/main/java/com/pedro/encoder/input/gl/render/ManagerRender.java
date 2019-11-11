@@ -73,7 +73,7 @@ public class ManagerRender {
       screenRender.setRotation(0);
     }
     else {
-      screenRender.setRotation(90);
+      screenRender.setRotation(180);
     }
   }
 
