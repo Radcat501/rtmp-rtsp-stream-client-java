@@ -65,6 +65,18 @@ public class ManagerRender {
     screenRender.draw(width, height, keepAspectRatio);
   }
 
+  public void drawScreen(int width, int height, boolean keepAspectRatio, boolean isPreview) {
+
+    screenRender.draw(width, height, keepAspectRatio);
+
+    if(isPreview) {
+      screenRender.setRotation(0);
+    }
+    else {
+      screenRender.setRotation(90);
+    }
+  }
+
   public void release() {
     cameraRender.release();
     for (int i = 0; i < this.baseFilterRender.size(); i++) {

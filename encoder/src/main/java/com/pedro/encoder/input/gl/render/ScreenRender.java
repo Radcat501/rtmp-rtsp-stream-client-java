@@ -100,9 +100,6 @@ public class ScreenRender {
     GLES20.glUniform2f(uResolutionHandle, width, height);
     GLES20.glUniform1f(uAAEnabledHandle, AAEnabled ? 1f : 0f);
 
-    // Crutch for iOS
-    Matrix.setRotateM(STMatrix, 0, 90, 0, 0, 1.0f);
-
     GLES20.glUniform1i(uSamplerHandle, 5);
     GLES20.glActiveTexture(GLES20.GL_TEXTURE5);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texId);
@@ -110,6 +107,16 @@ public class ScreenRender {
     GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 
     GlUtil.checkGlError("drawScreen end");
+  }
+
+  public void setRotation(int rotation) {
+    Matrix.setIdentityM(squareVertexData, 0);
+    Matrix.rotateM(squareVertexData, 0, rotation, 0f, 0f, -1f);
+    update();
+  }
+  private void update() {
+    Matrix.setIdentityM(MVPMatrix, 0);
+    Matrix.multiplyMM(MVPMatrix, 0, squareVertexData, 0, MVPMatrix, 0);
   }
 
   public void release() {
