@@ -100,6 +100,9 @@ public class ScreenRender {
     GLES20.glUniform2f(uResolutionHandle, width, height);
     GLES20.glUniform1f(uAAEnabledHandle, AAEnabled ? 1f : 0f);
 
+    // Crutch for iOS
+    Matrix.setRotateM(STMatrix, 0, 90, 0, 0, 1.0f);
+
     GLES20.glUniform1i(uSamplerHandle, 5);
     GLES20.glActiveTexture(GLES20.GL_TEXTURE5);
     GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texId);
