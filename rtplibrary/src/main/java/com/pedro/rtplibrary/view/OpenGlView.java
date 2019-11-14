@@ -115,7 +115,7 @@ public class OpenGlView extends OpenGlViewBase {
           surfaceManager.makeCurrent();
           managerRender.updateFrame();
           managerRender.drawOffScreen();
-          managerRender.drawScreen(previewHeight, previewWidth, keepAspectRatio, false);
+          managerRender.drawScreen(previewWidth, previewHeight, keepAspectRatio, false);
           surfaceManager.swapBuffer();
           if (takePhotoCallback != null) {
             takePhotoCallback.onTakePhoto(
