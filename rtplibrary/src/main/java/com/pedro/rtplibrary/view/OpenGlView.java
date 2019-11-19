@@ -103,13 +103,6 @@ public class OpenGlView extends OpenGlViewBase {
   @Override
   public void run() {
 
-    // Crutch for ios
-    encoderWidth = 570;
-    encoderHeight = 400;
-
-    previewWidth = 570;
-    previewHeight = 400;
-
     releaseSurfaceManager();
     surfaceManager = new SurfaceManager(getHolder().getSurface());
     surfaceManager.makeCurrent();
@@ -123,7 +116,8 @@ public class OpenGlView extends OpenGlViewBase {
           surfaceManager.makeCurrent();
           managerRender.updateFrame();
           managerRender.drawOffScreen();
-          managerRender.drawScreen(previewWidth, previewHeight, keepAspectRatio, false);
+//        managerRender.drawScreen(previewWidth, previewHeight, keepAspectRatio);
+          managerRender.drawScreen(previewWidth, previewHeight, keepAspectRatio, true);
           surfaceManager.swapBuffer();
           if (takePhotoCallback != null) {
             takePhotoCallback.onTakePhoto(
@@ -133,7 +127,8 @@ public class OpenGlView extends OpenGlViewBase {
           synchronized (sync) {
             if (surfaceManagerEncoder != null  && !fpsLimiter.limitFPS()) {
               surfaceManagerEncoder.makeCurrent();
-              managerRender.drawScreen(encoderWidth, encoderHeight, false, true);
+//            managerRender.drawScreen(encoderWidth, encoderHeight, false);
+              managerRender.drawScreen(encoderWidth, encoderHeight, false, false);
               surfaceManagerEncoder.swapBuffer();
             }
           }

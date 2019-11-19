@@ -70,10 +70,10 @@ public class ManagerRender {
     screenRender.draw(width, height, keepAspectRatio);
 
     if(isPreview) {
-      screenRender.setRotation(0);
+      screenRender.setRotation(270);
     }
     else {
-      screenRender.setRotation(270);
+      screenRender.setRotation(0);
     }
   }
 
