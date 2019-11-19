@@ -40,10 +40,10 @@ public class ManagerRender {
   public void initGl(Context context, int encoderWidth, int encoderHeight, int previewWidth,
       int previewHeight) {
     this.context = context;
-    this.width = encoderWidth;
-    this.height = encoderHeight;
-    this.previewWidth = previewWidth;
-    this.previewHeight = previewHeight;
+    this.width = encoderHeight;
+    this.height = encoderWidth;
+    this.previewWidth = previewHeight;
+    this.previewHeight = previewWidth;
     cameraRender.initGl(width, height, context, previewWidth, previewHeight);
     for (int i = 0; i < numFilters; i++) {
       int textId = i == 0 ? cameraRender.getTexId() : baseFilterRender.get(i - 1).getTexId();
