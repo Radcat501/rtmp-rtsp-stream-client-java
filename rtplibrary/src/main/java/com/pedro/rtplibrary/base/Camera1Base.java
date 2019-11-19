@@ -244,7 +244,7 @@ public abstract class Camera1Base
    * doesn't support any configuration seated or your device hasn't a H264 encoder).
    */
   public boolean prepareVideo() {
-    int rotation = CameraHelper.getCameraOrientation(context);
+    int rotation = 0;//CameraHelper.getCameraOrientation(context);
     return prepareVideo(640, 480, 30, 1200 * 1024, false, rotation);
   }
 
