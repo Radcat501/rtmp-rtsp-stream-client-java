@@ -107,6 +107,9 @@ public class OpenGlView extends OpenGlViewBase {
     encoderWidth = 570;
     encoderHeight = 400;
 
+    previewWidth = 570;
+    previewHeight = 400;
+
     releaseSurfaceManager();
     surfaceManager = new SurfaceManager(getHolder().getSurface());
     surfaceManager.makeCurrent();
