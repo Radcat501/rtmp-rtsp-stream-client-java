@@ -69,12 +69,12 @@ public class ManagerRender {
 
     screenRender.draw(width, height, keepAspectRatio);
 
-//    if(isPreview) {
-//      screenRender.setRotation(0);
-//    }
-//    else {
-//      screenRender.setRotation(0);
-//    }
+    if(isPreview) {
+      screenRender.setRotation(90);
+    }
+    else {
+      screenRender.setRotation(0);
+    }
   }
 
   public void release() {
