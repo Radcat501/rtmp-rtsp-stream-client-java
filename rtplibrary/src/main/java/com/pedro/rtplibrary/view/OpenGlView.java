@@ -102,6 +102,11 @@ public class OpenGlView extends OpenGlViewBase {
 
   @Override
   public void run() {
+
+    // Crutch for ios
+    encoderWidth = 570;
+    encoderHeight = 400;
+
     releaseSurfaceManager();
     surfaceManager = new SurfaceManager(getHolder().getSurface());
     surfaceManager.makeCurrent();
