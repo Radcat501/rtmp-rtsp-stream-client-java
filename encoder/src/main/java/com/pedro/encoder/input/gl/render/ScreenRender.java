@@ -28,6 +28,14 @@ public class ScreenRender {
       1f, 1f, 0f, 1f, 1f, //top right
   };
 
+  private final float[] rotatedVertexData = {
+          // X, Y, Z, U, V
+          -1f, -1f, 0f, 0f, 0f, //bottom left
+          1f, -1f, 0f, 1f, 0f, //bottom right
+          -1f, 1f, 0f, 0f, 1f, //top left
+          1f, 1f, 0f, 1f, 1f, //top right
+  };
+
   private FloatBuffer squareVertex;
 
   private float[] MVPMatrix = new float[16];
@@ -49,6 +57,11 @@ public class ScreenRender {
   private int streamHeight;
 
   public ScreenRender() {
+    // Prepare rotated matrix
+    Matrix.setIdentityM(rotatedVertexData, 0);
+    Matrix.rotateM(rotatedVertexData, 0, 90, 0f, 0f, -1f);
+
+    // Initialization
     squareVertex =
         ByteBuffer.allocateDirect(squareVertexData.length * BaseRenderOffScreen.FLOAT_SIZE_BYTES)
             .order(ByteOrder.nativeOrder())
@@ -110,13 +123,26 @@ public class ScreenRender {
   }
 
   public void setRotation(int rotation) {
-    Matrix.setIdentityM(squareVertexData, 0);
-    Matrix.rotateM(squareVertexData, 0, rotation, 0f, 0f, -1f);
-    update();
+//    Matrix.setIdentityM(squareVertexData, 0);
+//    Matrix.rotateM(squareVertexData, 0, rotation, 0f, 0f, -1f);
+//    update();
+
+    if(rotation == 90) {
+        updateWithMatrix(rotatedVertexData);
+    }
+    else {
+        updateWithMatrix(squareVertexData);
+    }
   }
+
   private void update() {
     Matrix.setIdentityM(MVPMatrix, 0);
     Matrix.multiplyMM(MVPMatrix, 0, squareVertexData, 0, MVPMatrix, 0);
+  }
+
+  private void updateWithMatrix(float[] matrixData) {
+      Matrix.setIdentityM(MVPMatrix, 0);
+      Matrix.multiplyMM(MVPMatrix, 0, matrixData, 0, MVPMatrix, 0);
   }
 
   public void release() {
