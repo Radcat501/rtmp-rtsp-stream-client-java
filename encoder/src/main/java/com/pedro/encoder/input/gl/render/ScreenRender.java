@@ -4,6 +4,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
 import com.pedro.encoder.R;
 import com.pedro.encoder.utils.gl.GlUtil;
@@ -11,6 +12,7 @@ import com.pedro.encoder.utils.gl.PreviewSizeCalculator;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 /**
  * Created by pedro on 29/01/18.
@@ -28,13 +30,7 @@ public class ScreenRender {
       1f, 1f, 0f, 1f, 1f, //top right
   };
 
-  private final float[] rotatedVertexData = {
-          // X, Y, Z, U, V
-          -1f, -1f, 0f, 0f, 0f, //bottom left
-          1f, -1f, 0f, 1f, 0f, //bottom right
-          -1f, 1f, 0f, 0f, 1f, //top left
-          1f, 1f, 0f, 1f, 1f, //top right
-  };
+  private final float[] rotatedVertexData = Arrays.copyOf(squareVertexData, squareVertexData.length);
 
   private FloatBuffer squareVertex;
 
@@ -57,16 +53,20 @@ public class ScreenRender {
   private int streamHeight;
 
   public ScreenRender() {
-    // Prepare rotated matrix
-    Matrix.setIdentityM(rotatedVertexData, 0);
-    Matrix.rotateM(rotatedVertexData, 0, 90, 0f, 0f, -1f);
-
     // Initialization
     squareVertex =
         ByteBuffer.allocateDirect(squareVertexData.length * BaseRenderOffScreen.FLOAT_SIZE_BYTES)
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer();
     squareVertex.put(squareVertexData).position(0);
+
+    Matrix.setIdentityM(squareVertexData, 0);
+    Matrix.rotateM(squareVertexData, 0, 0, 0f, 0f, -1f);
+
+    // Copy squareVertexData and rotate it on 90 degrees
+    Matrix.setIdentityM(rotatedVertexData, 0);
+    Matrix.rotateM(rotatedVertexData, 0, 90, 0f, 0f, -1f);
+
     Matrix.setIdentityM(MVPMatrix, 0);
     Matrix.setIdentityM(STMatrix, 0);
   }
@@ -123,8 +123,8 @@ public class ScreenRender {
   }
 
   public void setRotation(int rotation) {
-//    Matrix.setIdentityM(squareVertexData, 0);
-//    Matrix.rotateM(squareVertexData, 0, rotation, 0f, 0f, -1f);
+//    Matrix.setIdentityM(rotatedVertexData, 0);
+//    Matrix.rotateM(rotatedVertexData, 0, 0, 0f, 0f, -1f);
 //    update();
 
     if(rotation == 90) {
@@ -137,7 +137,7 @@ public class ScreenRender {
 
   private void update() {
     Matrix.setIdentityM(MVPMatrix, 0);
-    Matrix.multiplyMM(MVPMatrix, 0, squareVertexData, 0, MVPMatrix, 0);
+    Matrix.multiplyMM(MVPMatrix, 0, rotatedVertexData, 0, MVPMatrix, 0);
   }
 
   private void updateWithMatrix(float[] matrixData) {

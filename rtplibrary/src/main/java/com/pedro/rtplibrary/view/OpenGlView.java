@@ -72,10 +72,6 @@ public class OpenGlView extends OpenGlViewBase {
     setFilter(0, baseFilterRender);
   }
 
-  public Boolean isFilterQueueEmpty() {
-    return filterQueue.isEmpty();
-  }
-
   @Override
   public void enableAA(boolean AAEnabled) {
     this.AAEnabled = AAEnabled;
