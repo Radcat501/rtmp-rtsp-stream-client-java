@@ -4,6 +4,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
 import com.pedro.encoder.R;
 import com.pedro.encoder.utils.gl.GlUtil;
@@ -11,6 +12,7 @@ import com.pedro.encoder.utils.gl.PreviewSizeCalculator;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 /**
  * Created by pedro on 29/01/18.
@@ -28,14 +30,8 @@ public class ScreenRender {
           1f, 1f, 0f, 1f, 1f, //top right
   };
 
-  private final float[] rotatedVertexData = {
-          // X, Y, Z, U, V
-          -1f, -1f, 0f, 0f, 0f, //bottom left
-          1f, -1f, 0f, 1f, 0f, //bottom right
-          -1f, 1f, 0f, 0f, 1f, //top left
-          1f, 1f, 0f, 1f, 1f, //top right
-  };
-  
+  private final float[] rotatedVertexData = Arrays.copyOf(squareVertexData, squareVertexData.length);
+
   private FloatBuffer squareVertex;
 
   private float[] MVPMatrix = new float[16];
@@ -57,21 +53,23 @@ public class ScreenRender {
   private int streamHeight;
 
   public ScreenRender() {
-    // Prepare rotated matrix
-    Matrix.setIdentityM(rotatedVertexData, 0);
-    Matrix.rotateM(rotatedVertexData, 0, 90, 0f, 0f, -1f);
-
     // Initialization
     squareVertex =
             ByteBuffer.allocateDirect(squareVertexData.length * BaseRenderOffScreen.FLOAT_SIZE_BYTES)
                     .order(ByteOrder.nativeOrder())
                     .asFloatBuffer();
     squareVertex.put(squareVertexData).position(0);
+
+    Matrix.setIdentityM(squareVertexData, 0);
+    Matrix.rotateM(squareVertexData, 0, 0, 0f, 0f, -1f);
+
+    // Copy squareVertexData and rotate it on 90 degrees
+    Matrix.setIdentityM(rotatedVertexData, 0);
+    Matrix.rotateM(rotatedVertexData, 0, 90, 0f, 0f, -1f);
+
     Matrix.setIdentityM(MVPMatrix, 0);
     Matrix.setIdentityM(STMatrix, 0);
   }
-
-  private int uRotationHandle = -1; //this is the new line
 
   public void initGl(Context context) {
     GlUtil.checkGlError("initGl start");
@@ -86,11 +84,10 @@ public class ScreenRender {
     uSamplerHandle = GLES20.glGetUniformLocation(program, "uSampler");
     uResolutionHandle = GLES20.glGetUniformLocation(program, "uResolution");
     uAAEnabledHandle = GLES20.glGetUniformLocation(program, "uAAEnabled");
-    uRotationHandle = GLES20.glGetUniformLocation(program, "uRotation"); //this is the new line
     GlUtil.checkGlError("initGl end");
   }
 
-  public void draw(int width, int height, boolean keepAspectRatio, boolean isPreview) {
+  public void draw(int width, int height, boolean keepAspectRatio) {
     GlUtil.checkGlError("drawScreen start");
 
     PreviewSizeCalculator.calculateViewPort(keepAspectRatio, width, height, streamWidth,
@@ -115,7 +112,6 @@ public class ScreenRender {
     GLES20.glUniformMatrix4fv(uSTMatrixHandle, 1, false, STMatrix, 0);
     GLES20.glUniform2f(uResolutionHandle, width, height);
     GLES20.glUniform1f(uAAEnabledHandle, AAEnabled ? 1f : 0f);
-    GLES20.glUniform1f(uRotationHandle, isPreview ? 90f : 0f); //this is the new line
 
     GLES20.glUniform1i(uSamplerHandle, 5);
     GLES20.glActiveTexture(GLES20.GL_TEXTURE5);
@@ -127,26 +123,17 @@ public class ScreenRender {
   }
 
   public void setRotation(int rotation) {
-//    Matrix.setIdentityM(squareVertexData, 0);
-//    Matrix.rotateM(squareVertexData, 0, rotation, 0f, 0f, -1f);
-//    update();
-
     if(rotation == 90) {
-        updateWithMatrix(rotatedVertexData);
+      updateWithMatrix(rotatedVertexData);
     }
     else {
-        updateWithMatrix(squareVertexData);
+      updateWithMatrix(squareVertexData);
     }
-  }
-
-  private void update() {
-    Matrix.setIdentityM(MVPMatrix, 0);
-    Matrix.multiplyMM(MVPMatrix, 0, squareVertexData, 0, MVPMatrix, 0);
   }
 
   private void updateWithMatrix(float[] matrixData) {
-      Matrix.setIdentityM(MVPMatrix, 0);
-      Matrix.multiplyMM(MVPMatrix, 0, matrixData, 0, MVPMatrix, 0);
+    Matrix.setIdentityM(MVPMatrix, 0);
+    Matrix.multiplyMM(MVPMatrix, 0, matrixData, 0, MVPMatrix, 0);
   }
 
   public void release() {
