@@ -61,20 +61,20 @@ public class ManagerRender {
     for (BaseFilterRender baseFilterRender : baseFilterRender) baseFilterRender.draw();
   }
 
-  public void drawScreen(int width, int height, boolean keepAspectRatio) {
-    screenRender.draw(width, height, keepAspectRatio);
-  }
+//  public void drawScreen(int width, int height, boolean keepAspectRatio) {
+//    screenRender.draw(width, height, keepAspectRatio);
+//  }
 
   public void drawScreen(int width, int height, boolean keepAspectRatio, boolean isPreview) {
 
-    screenRender.draw(width, height, keepAspectRatio);
+    screenRender.draw(width, height, keepAspectRatio, isPreview);
 
-    if(isPreview) {
-      screenRender.setRotation(0);
-    }
-    else {
-      screenRender.setRotation(90);
-    }
+//    if(isPreview) {
+//      screenRender.setRotation(0);
+//    }
+//    else {
+//      screenRender.setRotation(90);
+//    }
   }
 
   public void release() {

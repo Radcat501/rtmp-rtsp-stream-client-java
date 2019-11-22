@@ -4,7 +4,6 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
 import com.pedro.encoder.R;
 import com.pedro.encoder.utils.gl.GlUtil;
@@ -12,7 +11,6 @@ import com.pedro.encoder.utils.gl.PreviewSizeCalculator;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 /**
  * Created by pedro on 29/01/18.
@@ -23,14 +21,12 @@ public class ScreenRender {
 
   //rotation matrix
   private final float[] squareVertexData = {
-      // X, Y, Z, U, V
-      -1f, -1f, 0f, 0f, 0f, //bottom left
-      1f, -1f, 0f, 1f, 0f, //bottom right
-      -1f, 1f, 0f, 0f, 1f, //top left
-      1f, 1f, 0f, 1f, 1f, //top right
+          // X, Y, Z, U, V
+          -1f, -1f, 0f, 0f, 0f, //bottom left
+          1f, -1f, 0f, 1f, 0f, //bottom right
+          -1f, 1f, 0f, 0f, 1f, //top left
+          1f, 1f, 0f, 1f, 1f, //top right
   };
-
-  private final float[] rotatedVertexData = Arrays.copyOf(squareVertexData, squareVertexData.length);
 
   private FloatBuffer squareVertex;
 
@@ -53,23 +49,16 @@ public class ScreenRender {
   private int streamHeight;
 
   public ScreenRender() {
-    // Initialization
     squareVertex =
-        ByteBuffer.allocateDirect(squareVertexData.length * BaseRenderOffScreen.FLOAT_SIZE_BYTES)
-            .order(ByteOrder.nativeOrder())
-            .asFloatBuffer();
+            ByteBuffer.allocateDirect(squareVertexData.length * BaseRenderOffScreen.FLOAT_SIZE_BYTES)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
     squareVertex.put(squareVertexData).position(0);
-
-    Matrix.setIdentityM(squareVertexData, 0);
-    Matrix.rotateM(squareVertexData, 0, 0, 0f, 0f, -1f);
-
-    // Copy squareVertexData and rotate it on 90 degrees
-    Matrix.setIdentityM(rotatedVertexData, 0);
-    Matrix.rotateM(rotatedVertexData, 0, 90, 0f, 0f, -1f);
-
     Matrix.setIdentityM(MVPMatrix, 0);
     Matrix.setIdentityM(STMatrix, 0);
   }
+
+  private int uRotationHandle = -1; //this is the new line
 
   public void initGl(Context context) {
     GlUtil.checkGlError("initGl start");
@@ -84,14 +73,15 @@ public class ScreenRender {
     uSamplerHandle = GLES20.glGetUniformLocation(program, "uSampler");
     uResolutionHandle = GLES20.glGetUniformLocation(program, "uResolution");
     uAAEnabledHandle = GLES20.glGetUniformLocation(program, "uAAEnabled");
+    uRotationHandle = GLES20.glGetUniformLocation(program, "uRotation"); //this is the new line
     GlUtil.checkGlError("initGl end");
   }
 
-  public void draw(int width, int height, boolean keepAspectRatio) {
+  public void draw(int width, int height, boolean keepAspectRatio, boolean isPreview) {
     GlUtil.checkGlError("drawScreen start");
 
     PreviewSizeCalculator.calculateViewPort(keepAspectRatio, width, height, streamWidth,
-        streamHeight);
+            streamHeight);
 
     GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
@@ -100,18 +90,19 @@ public class ScreenRender {
 
     squareVertex.position(BaseRenderOffScreen.SQUARE_VERTEX_DATA_POS_OFFSET);
     GLES20.glVertexAttribPointer(aPositionHandle, 3, GLES20.GL_FLOAT, false,
-        BaseRenderOffScreen.SQUARE_VERTEX_DATA_STRIDE_BYTES, squareVertex);
+            BaseRenderOffScreen.SQUARE_VERTEX_DATA_STRIDE_BYTES, squareVertex);
     GLES20.glEnableVertexAttribArray(aPositionHandle);
 
     squareVertex.position(BaseRenderOffScreen.SQUARE_VERTEX_DATA_UV_OFFSET);
     GLES20.glVertexAttribPointer(aTextureHandle, 2, GLES20.GL_FLOAT, false,
-        BaseRenderOffScreen.SQUARE_VERTEX_DATA_STRIDE_BYTES, squareVertex);
+            BaseRenderOffScreen.SQUARE_VERTEX_DATA_STRIDE_BYTES, squareVertex);
     GLES20.glEnableVertexAttribArray(aTextureHandle);
 
     GLES20.glUniformMatrix4fv(uMVPMatrixHandle, 1, false, MVPMatrix, 0);
     GLES20.glUniformMatrix4fv(uSTMatrixHandle, 1, false, STMatrix, 0);
     GLES20.glUniform2f(uResolutionHandle, width, height);
     GLES20.glUniform1f(uAAEnabledHandle, AAEnabled ? 1f : 0f);
+    GLES20.glUniform1f(uRotationHandle, isPreview ? 90f : 0f); //this is the new line
 
     GLES20.glUniform1i(uSamplerHandle, 5);
     GLES20.glActiveTexture(GLES20.GL_TEXTURE5);
@@ -120,29 +111,6 @@ public class ScreenRender {
     GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 
     GlUtil.checkGlError("drawScreen end");
-  }
-
-  public void setRotation(int rotation) {
-//    Matrix.setIdentityM(rotatedVertexData, 0);
-//    Matrix.rotateM(rotatedVertexData, 0, 0, 0f, 0f, -1f);
-//    update();
-
-    if(rotation == 90) {
-        updateWithMatrix(rotatedVertexData);
-    }
-    else {
-        updateWithMatrix(squareVertexData);
-    }
-  }
-
-  private void update() {
-    Matrix.setIdentityM(MVPMatrix, 0);
-    Matrix.multiplyMM(MVPMatrix, 0, rotatedVertexData, 0, MVPMatrix, 0);
-  }
-
-  private void updateWithMatrix(float[] matrixData) {
-      Matrix.setIdentityM(MVPMatrix, 0);
-      Matrix.multiplyMM(MVPMatrix, 0, matrixData, 0, MVPMatrix, 0);
   }
 
   public void release() {
